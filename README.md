@@ -30,18 +30,18 @@ copied to appropriate locations.
 
 ## Building Ninja locally
 
-### CMake
+If you are in Juniper, you can build Ninja via CMake locally on a dev VM, by turning the `JUNIPER` option on.
 
 ```
-cmake -Bbuild-cmake
-cmake --build build-cmake
+cmake -Bbuild-ninja -DJUNIPER=ON
+cmake --build build-ninja
 ```
 
-The `ninja` binary will now be inside the `build-cmake` directory (you can
+The `ninja` binary will now be inside the `build-ninja` directory (you can
 choose any other name you like).
 
 To run the unit tests:
 
 ```
-./build-cmake/ninja_test
+./build-ninja/ninja_test
 ```

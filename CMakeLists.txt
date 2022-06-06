@@ -5,6 +5,40 @@ include(CheckIPOSupported)
 
 project(ninja)
 
+
+option(JUNIPER "Build for Juniper Networks" OFF)
+
+if (JUNIPER)
+	message("Using Juniper libraries on ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION}")
+
+	if(${CMAKE_VERSION} VERSION_LESS 3.17.0)
+	    # The 17 standard was still only available as 1z in older versions of cmake:
+	    set(CMAKE_CXX17_STANDARD_COMPILE_OPTION "-std=c++17")
+	    set(CMAKE_CXX17_EXTENSION_COMPILE_OPTION "-std=gnu++17")
+	endif()
+
+	set(CMAKE_CXX_STANDARD 17)
+	# Use --std=c++ rather than -std=gnu++
+	set(CMAKE_CXX_EXTENSIONS OFF)
+
+	set(JNPR_PATH "/opt/128technology")
+
+	link_directories(${JNPR_PATH}/lib64)
+
+	set(LINKER_FLAG_LIST_JNPR
+	    "-B${JNPR_PATH}/bin"
+	    "-L${JNPR_PATH}/lib64"
+	    "-Wl,-rpath=${JNPR_PATH}/lib64"
+	    "-Wl,--dynamic-linker=${JNPR_PATH}/lib64/ld-linux-x86-64.so.2")
+
+	string(REPLACE ";" " " LINKER_FLAGS_JNPR "${LINKER_FLAG_LIST_JNPR}")
+
+	set(CMAKE_EXE_LINKER_FLAGS ${LINKER_FLAGS_JNPR})
+	set(CMAKE_MODULE_LINKER_FLAGS ${LINKER_FLAGS_JNPR})
+	set(CMAKE_SHARED_LINKER_FLAGS ${LINKER_FLAGS_JNPR})
+endif()
+
+
 # --- optional link-time optimization
 check_ipo_supported(RESULT lto_supported OUTPUT error)
 
