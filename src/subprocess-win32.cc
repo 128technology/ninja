@@ -23,9 +23,10 @@
 
 using namespace std;
 
-Subprocess::Subprocess(bool use_console) : child_(NULL) , overlapped_(),
-                                           is_reading_(false),
-                                           use_console_(use_console) {
+Subprocess::Subprocess(bool use_console, bool)
+  : child_(NULL) , overlapped_(),
+    is_reading_(false),
+    use_console_(use_console) {
 }
 
 Subprocess::~Subprocess() {
@@ -238,8 +239,8 @@ BOOL WINAPI SubprocessSet::NotifyInterrupted(DWORD dwCtrlType) {
   return FALSE;
 }
 
-Subprocess *SubprocessSet::Add(const string& command, bool use_console) {
-  Subprocess *subprocess = new Subprocess(use_console);
+Subprocess *SubprocessSet::Add(const string& command, bool use_console, bool) {
+  Subprocess *subprocess = new Subprocess(use_console, false);
   if (!subprocess->Start(this, command)) {
     delete subprocess;
     return 0;

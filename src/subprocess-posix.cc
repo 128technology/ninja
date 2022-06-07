@@ -36,8 +36,11 @@ extern char** environ;
 
 using namespace std;
 
-Subprocess::Subprocess(bool use_console) : fd_(-1), pid_(-1),
-                                           use_console_(use_console) {
+Subprocess::Subprocess(bool use_console, bool hide_stdout)
+    : fd_(-1), pid_(-1),
+      use_console_(use_console),
+      hide_stdout_(hide_stdout)
+{
 }
 
 Subprocess::~Subprocess() {
@@ -97,7 +100,11 @@ bool Subprocess::Start(SubprocessSet* set, const string& command) {
       Fatal("posix_spawn_file_actions_addopen: %s", strerror(err));
     }
 
-    err = posix_spawn_file_actions_adddup2(&action, output_pipe[1], 1);
+    if (hide_stdout_) {
+      err = posix_spawn_file_actions_addopen(&action, 1, "/dev/null", O_WRONLY, 0);
+    } else {
+      err = posix_spawn_file_actions_adddup2(&action, output_pipe[1], 1);
+    }
     if (err != 0)
       Fatal("posix_spawn_file_actions_adddup2: %s", strerror(err));
     err = posix_spawn_file_actions_adddup2(&action, output_pipe[1], 2);
@@ -238,8 +245,8 @@ SubprocessSet::~SubprocessSet() {
     Fatal("sigprocmask: %s", strerror(errno));
 }
 
-Subprocess *SubprocessSet::Add(const string& command, bool use_console) {
-  Subprocess *subprocess = new Subprocess(use_console);
+Subprocess *SubprocessSet::Add(const string& command, bool use_console, bool hide_stdout) {
+  Subprocess *subprocess = new Subprocess(use_console, hide_stdout);
   if (!subprocess->Start(this, command)) {
     delete subprocess;
     return 0;

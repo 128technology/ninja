@@ -41,6 +41,7 @@
 #include "debug_flags.h"
 #include "depfile_parser.h"
 #include "disk_interface.h"
+#include "extensions.h"
 #include "graph.h"
 #include "graphviz.h"
 #include "json.h"
@@ -1423,12 +1424,13 @@ int ReadFlags(int* argc, char*** argv,
     { "version", no_argument, NULL, OPT_VERSION },
     { "verbose", no_argument, NULL, 'v' },
     { "quiet", no_argument, NULL, OPT_QUIET },
+    { "extra", required_argument, NULL, 'X' },
     { NULL, 0, NULL, 0 }
   };
 
   int opt;
   while (!options->tool &&
-         (opt = getopt_long(*argc, *argv, "d:f:j:k:l:nt:vw:C:h", kLongOptions,
+         (opt = getopt_long(*argc, *argv, "d:f:j:k:l:nt:vw:C:X:h", kLongOptions,
                             NULL)) != -1) {
     switch (opt) {
       case 'd':
@@ -1494,6 +1496,10 @@ int ReadFlags(int* argc, char*** argv,
       case OPT_VERSION:
         printf("%s\n", kNinjaVersion);
         return 0;
+      case 'X':
+        if (!ProcessExtraOption(optarg, config))
+          return 0;
+        break;
       case 'h':
       default:
         deferGuessParallelism.Refresh();

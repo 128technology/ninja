@@ -33,7 +33,8 @@ StatusPrinter::StatusPrinter(const BuildConfig& config)
       current_rate_(config.parallelism) {
 
   // Don't do anything fancy in verbose mode.
-  if (config_.verbosity != BuildConfig::NORMAL)
+  if (config_.verbosity != BuildConfig::NORMAL &&
+      config_.verbosity != BuildConfig::STATUS_ONLY)
     printer_.set_smart_terminal(false);
 
   progress_status_format_ = getenv("NINJA_STATUS");

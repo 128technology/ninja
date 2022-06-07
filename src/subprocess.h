@@ -51,7 +51,7 @@ struct Subprocess {
   const std::string& GetOutput() const;
 
  private:
-  Subprocess(bool use_console);
+  Subprocess(bool use_console, bool hide_stdout);
   bool Start(struct SubprocessSet* set, const std::string& command);
   void OnPipeReady();
 
@@ -72,6 +72,7 @@ struct Subprocess {
   pid_t pid_;
 #endif
   bool use_console_;
+  bool hide_stdout_;
 
   friend struct SubprocessSet;
 };
@@ -83,7 +84,7 @@ struct SubprocessSet {
   SubprocessSet();
   ~SubprocessSet();
 
-  Subprocess* Add(const std::string& command, bool use_console = false);
+  Subprocess* Add(const std::string& command, bool use_console = false, bool hide_stdout = false);
   bool DoWork();
   Subprocess* NextFinished();
   void Clear();

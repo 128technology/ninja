@@ -158,9 +158,12 @@ struct BuildConfig {
   BuildConfig() : verbosity(NORMAL), dry_run(false), parallelism(1),
                   failures_allowed(1), max_load_average(-0.0f) {}
 
+  // these should have been done as bitflags, so they could
+  // be or'ed and masked
   enum Verbosity {
     QUIET,  // No output -- used when testing.
     NO_STATUS_UPDATE,  // just regular output but suppress status update
+    STATUS_ONLY, // status updates, but no stdout from commands
     NORMAL,  // regular output and status update
     VERBOSE
   };
