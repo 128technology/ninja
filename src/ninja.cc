@@ -1087,8 +1087,10 @@ const Tool* ChooseTool(const string& tool_name) {
     { "msvc", "build helper for MSVC cl.exe (DEPRECATED)",
       Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolMSVC },
 #endif
+#ifndef JNPR_DISABLE_CLEAN
     { "clean", "clean built files",
       Tool::RUN_AFTER_LOAD, &NinjaMain::ToolClean },
+#endif
     { "commands", "list all commands required to rebuild given targets",
       Tool::RUN_AFTER_LOAD, &NinjaMain::ToolCommands },
     { "inputs", "list all inputs required to rebuild given targets",
@@ -1111,8 +1113,10 @@ const Tool* ChooseTool(const string& tool_name) {
       Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolRestat },
     { "rules",  "list all rules",
       Tool::RUN_AFTER_LOAD, &NinjaMain::ToolRules },
+#ifndef JNPR_DISABLE_CLEAN
     { "cleandead",  "clean built files that are no longer produced by the manifest",
       Tool::RUN_AFTER_LOGS, &NinjaMain::ToolCleanDead },
+#endif
     { "urtle", NULL,
       Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolUrtle },
 #ifdef _WIN32
