@@ -41,6 +41,7 @@
 #include "debug_flags.h"
 #include "depfile_parser.h"
 #include "disk_interface.h"
+#include "extensions.h"
 #include "graph.h"
 #include "graphviz.h"
 #include "json.h"
@@ -1086,8 +1087,10 @@ const Tool* ChooseTool(const string& tool_name) {
     { "msvc", "build helper for MSVC cl.exe (DEPRECATED)",
       Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolMSVC },
 #endif
+#ifndef JNPR_DISABLE_CLEAN
     { "clean", "clean built files",
       Tool::RUN_AFTER_LOAD, &NinjaMain::ToolClean },
+#endif
     { "commands", "list all commands required to rebuild given targets",
       Tool::RUN_AFTER_LOAD, &NinjaMain::ToolCommands },
     { "inputs", "list all inputs required to rebuild given targets",
@@ -1110,8 +1113,10 @@ const Tool* ChooseTool(const string& tool_name) {
       Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolRestat },
     { "rules",  "list all rules",
       Tool::RUN_AFTER_LOAD, &NinjaMain::ToolRules },
+#ifndef JNPR_DISABLE_CLEAN
     { "cleandead",  "clean built files that are no longer produced by the manifest",
       Tool::RUN_AFTER_LOGS, &NinjaMain::ToolCleanDead },
+#endif
     { "urtle", NULL,
       Tool::RUN_AFTER_FLAGS, &NinjaMain::ToolUrtle },
 #ifdef _WIN32
@@ -1423,12 +1428,13 @@ int ReadFlags(int* argc, char*** argv,
     { "version", no_argument, NULL, OPT_VERSION },
     { "verbose", no_argument, NULL, 'v' },
     { "quiet", no_argument, NULL, OPT_QUIET },
+    { "extra", required_argument, NULL, 'X' },
     { NULL, 0, NULL, 0 }
   };
 
   int opt;
   while (!options->tool &&
-         (opt = getopt_long(*argc, *argv, "d:f:j:k:l:nt:vw:C:h", kLongOptions,
+         (opt = getopt_long(*argc, *argv, "d:f:j:k:l:nt:vw:C:X:h", kLongOptions,
                             NULL)) != -1) {
     switch (opt) {
       case 'd':
@@ -1494,6 +1500,10 @@ int ReadFlags(int* argc, char*** argv,
       case OPT_VERSION:
         printf("%s\n", kNinjaVersion);
         return 0;
+      case 'X':
+        if (!ProcessExtraOption(optarg, config))
+          return 0;
+        break;
       case 'h':
       default:
         deferGuessParallelism.Refresh();

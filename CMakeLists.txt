@@ -38,6 +38,8 @@ if (JUNIPER)
 	set(CMAKE_EXE_LINKER_FLAGS ${LINKER_FLAGS_JNPR})
 	set(CMAKE_MODULE_LINKER_FLAGS ${LINKER_FLAGS_JNPR})
 	set(CMAKE_SHARED_LINKER_FLAGS ${LINKER_FLAGS_JNPR})
+
+	add_compile_definitions(JNPR_DISABLE_CLEAN)
 endif()
 
 
@@ -139,6 +141,7 @@ add_library(libninja OBJECT
 	src/disk_interface.cc
 	src/edit_distance.cc
 	src/eval_env.cc
+	src/extensions.cc
 	src/graph.cc
 	src/graphviz.cc
 	src/json.cc
