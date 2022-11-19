@@ -369,8 +369,13 @@ int ReadFile(const string& path, string* contents, string* err) {
     return -errno;
   }
 
+#ifdef __USE_LARGEFILE64
+  struct stat64 st;
+  if (fstat64(fileno(f), &st) < 0) {
+#else
   struct stat st;
   if (fstat(fileno(f), &st) < 0) {
+#endif
     err->assign(strerror(errno));
     fclose(f);
     return -errno;
@@ -646,6 +651,8 @@ int ParseCPUFromCGroup() {
   std::pair<int64_t, bool> period =
       readCount(cpu->second + "/cpu.cfs_period_us");
   if (!period.second)
+    return -1;
+  if (period.first == 0)
     return -1;
   return quota.first / period.first;
 }
